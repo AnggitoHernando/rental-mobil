@@ -30,7 +30,6 @@ defineEmits(["close"]);
         ]"
     >
         <div class="h-16 flex items-center justify-between px-4 border-b">
-            <!-- Logo -->
             <span class="font-bold text-lg truncate">
                 <span v-if="!collapsed">Admin Panel</span>
                 <span v-else>A</span>
@@ -44,14 +43,19 @@ defineEmits(["close"]);
             </button>
         </div>
 
-        <!-- MENU -->
         <nav class="p-4 space-y-2">
-            <Link class="flex items-center gap-3 p-2 rounded hover:bg-gray-100">
+            <Link
+                :href="route('dashboard')"
+                class="flex items-center gap-3 p-2 rounded hover:bg-gray-100"
+            >
                 <LayoutDashboard class="w-5 h-5" />
                 <span v-if="!collapsed">Dashboard</span>
             </Link>
 
-            <Link class="flex items-center gap-3 p-2 rounded hover:bg-gray-100">
+            <Link
+                :href="route('mobil.index')"
+                class="flex items-center gap-3 p-2 rounded hover:bg-gray-100"
+            >
                 <Car class="w-5 h-5" />
                 <span v-if="!collapsed">Mobil</span>
             </Link>
