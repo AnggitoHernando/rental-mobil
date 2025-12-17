@@ -1,7 +1,7 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Head, router } from "@inertiajs/vue3";
-import { PenLine, Trash2 } from "lucide-vue-next";
+import { PenLine, Trash2, ImagePlus, DollarSign } from "lucide-vue-next";
 import BaseTable from "@/Layouts/Table/BaseTable.vue";
 import Pagination from "@/Layouts/Table/Pagination.vue";
 import TableFilters from "@/Layouts/Table/TableFilters.vue";
@@ -144,6 +144,16 @@ const handleSubmit = ({ isEdit, data }) => {
                     >
                         <template #icon>
                             <PenLine class="w-4 h-4 text-white" />
+                        </template>
+                    </ActionButton>
+                    <ActionButton title="Tambah Gambar" class="bg-yellow-500">
+                        <template #icon>
+                            <ImagePlus class="w-4 h-4 text-white" />
+                        </template>
+                    </ActionButton>
+                    <ActionButton title="Tambah Harga" class="bg-green-500">
+                        <template #icon>
+                            <DollarSign class="w-4 h-4 text-white" />
                         </template>
                     </ActionButton>
                     <ActionButton
