@@ -61,7 +61,7 @@ const emit = defineEmits(["close"]);
                         <slot />
 
                         <!-- Footer -->
-                        <div class="mt-6 text-right">
+                        <!-- <div class="mt-6 text-right">
                             <button
                                 type="button"
                                 @click="$emit('close')"
@@ -69,7 +69,7 @@ const emit = defineEmits(["close"]);
                             >
                                 Close
                             </button>
-                        </div>
+                        </div> -->
                     </DialogPanel>
                 </TransitionChild>
             </div>

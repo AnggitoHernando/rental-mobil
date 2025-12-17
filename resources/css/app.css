@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.label-new {
+    @apply mb-1 block text-xs font-medium text-gray-500;
+}
+
+.input-new {
+    @apply w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm
+           focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:outline-none
+           transition;
+}

@@ -5,13 +5,15 @@ import BaseTable from "@/Layouts/Table/BaseTable.vue";
 import Pagination from "@/Layouts/Table/Pagination.vue";
 import TableFilters from "@/Layouts/Table/TableFilters.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import { ref } from "vue";
+import Modal from "@/Components/NewModal.vue";
+import CreateCarsForm from "@/Components/form/CreateCarsForm.vue";
 
+const showModal = ref(false);
 const { items } = defineProps({
     items: Object,
     filters: Object,
 });
-
-console.log(items);
 
 const columns = [
     { label: "Kode Mobil", key: "kode_mobil", sortable: true },
@@ -29,8 +31,10 @@ const columns = [
     <AdminLayout>
         <Head title="Mobil" />
         <h1 class="text-2xl font-bold mb-4">Mobil</h1>
-        <div class="">
-            <PrimaryButton>Tambah Mobil</PrimaryButton>
+        <div class="mb-2 flex flex-col sm:flex-row justify-end">
+            <PrimaryButton @click="showModal = true"
+                >Tambah Mobil</PrimaryButton
+            >
         </div>
         <BaseTable
             :columns="columns"
@@ -43,5 +47,12 @@ const columns = [
         </BaseTable>
 
         <Pagination :links="items.links" :meta="items.meta" />
+        <Modal :show="showModal" @close="showModal = false">
+            <template #title>
+                <h2 class="text-lg font-semibold">Tambah Mobil</h2>
+            </template>
+
+            <CreateCarsForm @cancel="showModal = false" />
+        </Modal>
     </AdminLayout>
 </template>

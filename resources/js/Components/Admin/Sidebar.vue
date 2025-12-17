@@ -29,7 +29,7 @@ defineEmits(["close"]);
                 : 'w-64',
         ]"
     >
-        <div class="h-16 flex items-center justify-between px-4 border-b">
+        <div class="h-16 flex items-center justify-between px-4">
             <span class="font-bold text-lg truncate">
                 <span v-if="!collapsed">Admin Panel</span>
                 <span v-else>A</span>
