@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CarsController;
+use App\Http\Controllers\CarController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +24,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/mobil', [CarsController::class, 'index'])->name('mobil.index');
+    Route::get('/mobil', [CarController::class, 'index'])->name('mobil.index');
+    Route::post('/mobil/simpan', [CarController::class, 'store'])->name('mobil.store');
+    Route::delete('/mobil/hapus/{car}', [CarController::class, 'destroy'])->name('mobil.destroy');
+    Route::put('/mobil/update/{car}', [CarController::class, 'update'])->name('mobil.update');
 });
 
 require __DIR__ . '/auth.php';
