@@ -4,6 +4,7 @@ import { Head } from "@inertiajs/vue3";
 import BaseTable from "@/Layouts/Table/BaseTable.vue";
 import Pagination from "@/Layouts/Table/Pagination.vue";
 import TableFilters from "@/Layouts/Table/TableFilters.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const { items } = defineProps({
     items: Object,
@@ -28,6 +29,9 @@ const columns = [
     <AdminLayout>
         <Head title="Mobil" />
         <h1 class="text-2xl font-bold mb-4">Mobil</h1>
+        <div class="">
+            <PrimaryButton>Tambah Mobil</PrimaryButton>
+        </div>
         <BaseTable
             :columns="columns"
             :rows="items.data"
