@@ -168,8 +168,7 @@ const handleSubmit = ({ isEdit, data }) => {
                 </div>
             </template>
         </BaseTable>
-
-        <Pagination :links="items.links" :meta="items.meta" />
+        <Pagination :links="items.links" :meta="items" />
         <Modal :show="showModal" @close="showModal = false">
             <template #title>
                 <h2 class="text-lg font-semibold">

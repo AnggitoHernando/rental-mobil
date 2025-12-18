@@ -14,20 +14,30 @@ const props = defineProps({
         }),
     },
 });
+console.log(props.meta);
 </script>
 
 <template>
-    <div v-if="meta.total > meta.per_page" class="flex gap-1 mt-4">
-        <Link
-            v-for="(link, i) in links"
-            :key="i"
-            :href="link.url"
-            v-html="link.label"
-            class="px-3 py-1 border rounded"
-            :class="{
-                'bg-blue-600 text-white': link.active,
-                'text-gray-400 pointer-events-none': !link.url,
-            }"
-        />
-    </div>
+    <nav v-if="links.length > 3" class="mt-4 flex justify-center">
+        <div class="flex gap-1">
+            <template v-for="(link, i) in links" :key="i">
+                <Link
+                    v-if="link.url"
+                    :href="link.url"
+                    v-html="link.label"
+                    class="px-3 py-1 border rounded text-sm"
+                    :class="
+                        link.active
+                            ? 'bg-primary-600 text-white'
+                            : 'hover:bg-gray-100'
+                    "
+                />
+                <span
+                    v-else
+                    v-html="link.label"
+                    class="px-3 py-1 border rounded text-gray-400 cursor-not-allowed"
+                />
+            </template>
+        </div>
+    </nav>
 </template>
