@@ -12,10 +12,11 @@ class CarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         return Inertia::render('Cars/Cars', [
-            'items' => Car::latest()->paginate(10)
+            'items' => Car::latest()->paginate(10),
+            'filters' => $request->only(['search', 'sort', 'direction']),
         ]);
     }
 

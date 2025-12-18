@@ -130,6 +130,8 @@ const handleSubmit = ({ isEdit, data }) => {
         <div class="mb-2 flex flex-col sm:flex-row justify-end">
             <PrimaryButton @click="openCreate">Tambah Mobil</PrimaryButton>
         </div>
+
+        <TableFilters :filters="filters" route-name="mobil.index" />
         <BaseTable
             :columns="columns"
             :rows="items.data"
