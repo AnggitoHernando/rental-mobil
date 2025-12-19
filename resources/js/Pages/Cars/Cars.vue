@@ -6,7 +6,7 @@ import BaseTable from "@/Layouts/Table/BaseTable.vue";
 import Pagination from "@/Layouts/Table/Pagination.vue";
 import TableFilters from "@/Layouts/Table/TableFilters.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { ref, getCurrentInstance } from "vue";
+import { ref, getCurrentInstance, watch } from "vue";
 import Modal from "@/Components/NewModal.vue";
 import CreateCarsForm from "@/Components/Form/CreateCarsForm.vue";
 import ActionButton from "@/Components/ButtonWithIcon.vue";
@@ -96,7 +96,6 @@ const handleSubmit = ({ isEdit, data }) => {
             },
             onFinish: () => {},
         });
-        // router.put(route('cars.update', data.id), data)
     } else {
         router.post(route("mobil.store"), data, {
             onSuccess: () => {
@@ -122,6 +121,18 @@ const handleSubmit = ({ isEdit, data }) => {
         });
     }
 };
+const search = ref("");
+
+watch(search, (value) => {
+    router.get(
+        route("mobil.index"),
+        { search: value },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+});
 </script>
 <template>
     <AdminLayout>
@@ -131,11 +142,17 @@ const handleSubmit = ({ isEdit, data }) => {
             <PrimaryButton @click="openCreate">Tambah Mobil</PrimaryButton>
         </div>
 
-        <TableFilters :filters="filters" route-name="mobil.index" />
+        <div class="flex items-center justify-between mb-4">
+            <TableFilters
+                v-model="search"
+                placeholder="Cari mobil, brand, plat..."
+            />
+        </div>
         <BaseTable
             :columns="columns"
             :rows="items.data"
-            route-name="users.index"
+            :filters="filters"
+            route-name="mobil.index"
         >
             <template #cell-actions="{ row }">
                 <div class="flex items-center gap-2">

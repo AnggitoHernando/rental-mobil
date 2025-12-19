@@ -1,44 +1,56 @@
 <script setup>
-import { Combobox, ComboboxInput } from "@headlessui/vue";
-import { router } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
+import { Search, X } from "lucide-vue-next";
 import debounce from "lodash/debounce";
 
 const props = defineProps({
-    filters: Object,
-    routeName: String,
+    modelValue: {
+        type: String,
+        default: "",
+    },
+    placeholder: {
+        type: String,
+        default: "Cari data...",
+    },
 });
 
-const search = ref(props.filters.search || "");
+const emit = defineEmits(["update:modelValue"]);
+
+const search = ref(props.modelValue);
 
 watch(
     search,
     debounce((value) => {
-        router.get(
-            route(props.routeName),
-            {
-                ...props.filters,
-                search: value,
-                page: 1,
-            },
-            {
-                preserveState: true,
-                replace: true,
-            }
-        );
+        emit("update:modelValue", value);
     }, 400)
 );
+
+const clear = () => {
+    search.value = "";
+    emit("update:modelValue", "");
+};
 </script>
 
 <template>
-    <div class="mb-4 max-w-sm">
-        <Combobox v-model="search">
-            <div class="relative">
-                <ComboboxInput
-                    class="w-full rounded border px-3 py-2 focus:ring focus:ring-blue-200"
-                    placeholder="Search..."
-                />
-            </div>
-        </Combobox>
+    <div class="relative w-full max-w-md">
+        <Search
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+        />
+
+        <input
+            v-model="search"
+            type="text"
+            :placeholder="placeholder"
+            class="w-full pl-11 pr-10 py-3 rounded-2xl bg-gray-100 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition"
+        />
+
+        <button
+            v-if="search"
+            @click="clear"
+            type="button"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+        >
+            <X class="w-4 h-4" />
+        </button>
     </div>
 </template>

@@ -14,7 +14,6 @@ const props = defineProps({
         }),
     },
 });
-console.log(props.meta);
 </script>
 
 <template>

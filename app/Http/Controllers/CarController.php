@@ -14,9 +14,20 @@ class CarController extends Controller
      */
     public function index(Request $request)
     {
+        $items = Car::query()
+            ->filter($request)
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('Cars/Cars', [
-            'items' => Car::latest()->paginate(10),
-            'filters' => $request->only(['search', 'sort', 'direction']),
+            'items' => $items,
+            'filters' => $request->only([
+                'search',
+                'sort',
+                'direction',
+                'from',
+                'to',
+            ]),
         ]);
     }
 

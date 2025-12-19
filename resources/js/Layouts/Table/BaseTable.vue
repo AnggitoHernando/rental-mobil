@@ -1,5 +1,6 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-vue-next";
 
 const props = defineProps({
     columns: {
@@ -68,13 +69,27 @@ const toggleSort = (column) => {
                         >
                             {{ col.label }}
 
-                            <span class="text-xs">
-                                <span v-if="filters.sort === col.key">
-                                    {{
-                                        filters.direction === "asc" ? "▲" : "▼"
-                                    }}
-                                </span>
-                                <span v-else class="text-gray-400">⇅</span>
+                            <span class="ml-1 inline-flex">
+                                <ArrowUp
+                                    v-if="
+                                        filters.sort === col.key &&
+                                        filters.direction === 'asc'
+                                    "
+                                    class="w-4 h-4 text-primary-600"
+                                />
+
+                                <ArrowDown
+                                    v-else-if="
+                                        filters.sort === col.key &&
+                                        filters.direction === 'desc'
+                                    "
+                                    class="w-4 h-4 text-primary-600"
+                                />
+
+                                <ArrowUpDown
+                                    v-else
+                                    class="w-4 h-4 text-gray-400"
+                                />
                             </span>
                         </div>
 
