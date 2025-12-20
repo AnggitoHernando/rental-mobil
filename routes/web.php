@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/mobil', [CarController::class, 'index'])->name('mobil.index');
+    Route::get('/mobil/image/{car}', [CarController::class, 'getImage'])->name('mobil.image');
+    Route::post('/mobil/image/simpan', [CarController::class, 'storageImage'])->name('mobil.image.storage');
     Route::post('/mobil/simpan', [CarController::class, 'store'])->name('mobil.store');
     Route::delete('/mobil/hapus/{car}', [CarController::class, 'destroy'])->name('mobil.destroy');
     Route::put('/mobil/update/{car}', [CarController::class, 'update'])->name('mobil.update');

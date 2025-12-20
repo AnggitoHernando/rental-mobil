@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Car;
+use App\Models\Configuration;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
+use App\Services\ImageService;
 
 class CarController extends Controller
 {
@@ -27,14 +30,21 @@ class CarController extends Controller
                 'direction',
                 'from',
                 'to',
-            ]),
+            ])
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create() {}
+
+    public function getImage(Car $car)
+    {
+        $result = $car->load('images');
+        $images = $result->images;
+        $cover = $car->load('imageCover')->imageCover;
+        return response()->json([
+            'images' => $images,
+            'coverImage' => $cover
+        ]);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -85,9 +95,36 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function storageImage(Request $request, ImageService $imageService)
     {
-        //
+        $validated = $request->validate([
+            'car_id' => 'required|exists:cars,id',
+            'images' => 'required|array|min:1',
+            'images.*.image_path' => 'file|image|mimes:jpg,jpeg,png,webp',
+            'images.*.cover' => 'required|in:0,1',
+        ]);
+        $car = Car::findOrFail($validated['car_id']);
+        if ($request->hasFile('images.0.image_path')) {
+            foreach ($request->images as $index => $item) {
+                $file  = $request->file("images.$index.image_path");
+                $cover = $item['cover'];
+                $galleryImage =  $imageService->resizeToJpeg(
+                    $file,
+                    1200,
+                    800
+                );
+                $galleryPath = 'mobil/galeri/' . uniqid() . '.jpg';
+                Storage::disk('public')->put($galleryPath, $galleryImage);
+                $car->images()->create([
+                    'image_path' => $galleryPath,
+                    'cover' => $cover
+                ]);
+            }
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Gambar berhasil disimpan',
+        ]);
     }
 
     /**

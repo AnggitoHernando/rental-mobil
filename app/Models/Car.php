@@ -54,4 +54,15 @@ class Car extends Model
                 }
             );
     }
+
+    public function images()
+    {
+        return $this->hasMany(CarImage::class, 'car_id')->where('cover', '0');
+    }
+
+    public function imageCover()
+    {
+
+        return $this->hasOne(CarImage::class)->where('cover', '1');
+    }
 }

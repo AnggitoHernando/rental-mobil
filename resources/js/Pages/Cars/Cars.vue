@@ -9,28 +9,42 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { ref, getCurrentInstance, watch } from "vue";
 import Modal from "@/Components/NewModal.vue";
 import CreateCarsForm from "@/Components/Form/CreateCarsForm.vue";
+import InsertImageCarsForm from "@/Components/Form/InsertImageCarsForm.vue";
 import ActionButton from "@/Components/ButtonWithIcon.vue";
 import { result } from "lodash";
+import axios from "axios";
 
 const { appContext } = getCurrentInstance();
 const swal = appContext.config.globalProperties.$swal;
 
 const showModal = ref(false);
-const { items } = defineProps({
+const { items, config } = defineProps({
     items: Object,
     filters: Object,
+    config: Object,
 });
 const selectedCar = ref(null);
 const errors = ref({});
+const selectedModal = ref(null);
+const dataImage = ref(null);
 
 const openCreate = () => {
     selectedCar.value = null;
+    selectedModal.value = "mobil";
     showModal.value = true;
 };
 
 const openEdit = (car) => {
     selectedCar.value = car;
     errors.value = "";
+    showModal.value = true;
+};
+
+const openImage = async (car) => {
+    selectedCar.value = car;
+    selectedModal.value = "gambar";
+    const { data } = await axios.get(route("mobil.image", car.id));
+    dataImage.value = data;
     showModal.value = true;
 };
 
@@ -121,6 +135,29 @@ const handleSubmit = ({ isEdit, data }) => {
         });
     }
 };
+
+const handleSubmitImage = async (data) => {
+    const formImage = new FormData();
+    formImage.append("car_id", data.data.car_id);
+    if (data.data.image?.length) {
+        data.data.image.forEach((data_image, i) => {
+            formImage.append(`images[${i}][image_path]`, data_image.image_path);
+            formImage.append(`images[${i}][cover]`, data_image.cover);
+        });
+    }
+    for (const [key, value] of formImage.entries()) {
+        console.log(key, value);
+    }
+
+    const res = await axios.post(route("mobil.image.storage"), formImage, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.status == "success") {
+        swal.fire("Berhasil!", res.data.message, "success");
+    } else {
+        console.log(res);
+    }
+};
 const search = ref("");
 
 watch(search, (value) => {
@@ -139,9 +176,8 @@ watch(search, (value) => {
         <Head title="Mobil" />
         <h1 class="text-2xl font-bold mb-4">Mobil</h1>
         <div class="mb-2 flex flex-col sm:flex-row justify-end">
-            <PrimaryButton @click="openCreate">Tambah Mobil</PrimaryButton>
+            <PrimaryButton @click="openCreate()">Tambah Mobil</PrimaryButton>
         </div>
-
         <div class="flex items-center justify-between mb-4">
             <TableFilters
                 v-model="search"
@@ -167,7 +203,10 @@ watch(search, (value) => {
                     </ActionButton>
                     <ActionButton title="Tambah Gambar" class="bg-yellow-500">
                         <template #icon>
-                            <ImagePlus class="w-4 h-4 text-white" />
+                            <ImagePlus
+                                class="w-4 h-4 text-white"
+                                @click="openImage(row)"
+                            />
                         </template>
                     </ActionButton>
                     <ActionButton title="Tambah Harga" class="bg-green-500">
@@ -190,17 +229,37 @@ watch(search, (value) => {
         <Pagination :links="items.links" :meta="items" />
         <Modal :show="showModal" @close="showModal = false">
             <template #title>
-                <h2 class="text-lg font-semibold">
+                <h2
+                    v-if="selectedModal === 'mobil'"
+                    class="text-lg font-semibold"
+                >
                     {{ selectedCar ? "Edit Mobil" : "Tambah Mobil" }}
+                </h2>
+                <h2
+                    v-if="selectedModal === 'gambar'"
+                    class="text-lg font-semibold"
+                >
+                    Tambah Gambar
                 </h2>
             </template>
 
-            <CreateCarsForm
-                :car="selectedCar"
-                :errors="errors"
-                @submit="handleSubmit"
-                @cancel="showModal = false"
-            />
+            <div v-if="selectedModal === 'mobil'">
+                <CreateCarsForm
+                    :car="selectedCar"
+                    :errors="errors"
+                    @submit="handleSubmit"
+                    @cancel="showModal = false"
+                />
+            </div>
+            <div v-if="selectedModal === 'gambar'">
+                <InsertImageCarsForm
+                    :coverImage="dataImage.coverImage"
+                    :images="dataImage.images"
+                    :data="selectedCar"
+                    @cancel="showModal == false"
+                    @submit="handleSubmitImage"
+                />
+            </div>
         </Modal>
     </AdminLayout>
 </template>

@@ -42,7 +42,7 @@ const toggleSort = (column) => {
             ...props.filters,
             sort: column.key,
             direction,
-            page: 1, // ← reset pagination saat sorting
+            page: 1,
         },
         {
             preserveState: true,

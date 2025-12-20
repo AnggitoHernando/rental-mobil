@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('car_id')->constrained()->cascadeOnDelete();
             $table->enum('price_type', ['daily', 'weekly', 'monthly']);
-            $table->decimal('price', 12, 2);
+            $table->decimal('bruto', 12, 2);
+            $table->decimal('disc', 12, 2);
+            $table->decimal('netto', 12, 2);
             $table->timestamps();
         });
     }

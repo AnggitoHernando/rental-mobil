@@ -35,7 +35,6 @@ const submit = () => {
 
 <template>
     <div class="space-y-5">
-        <!-- Kode Mobil -->
         <div>
             <label class="label-new">Kode Mobil</label>
             <input
@@ -49,7 +48,6 @@ const submit = () => {
             </p>
         </div>
 
-        <!-- Brand & Model -->
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label class="label-new">Brand</label>

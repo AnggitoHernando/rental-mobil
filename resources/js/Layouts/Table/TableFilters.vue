@@ -41,7 +41,7 @@ const clear = () => {
             v-model="search"
             type="text"
             :placeholder="placeholder"
-            class="w-full pl-11 pr-10 py-3 rounded-2xl bg-gray-100 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition"
+            class="w-full pl-11 pr-10 py-3 border-solid border-gray-300 rounded-xl bg-gray-100 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition"
         />
 
         <button
