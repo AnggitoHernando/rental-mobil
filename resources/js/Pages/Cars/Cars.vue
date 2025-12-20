@@ -10,6 +10,7 @@ import { ref, getCurrentInstance, watch } from "vue";
 import Modal from "@/Components/NewModal.vue";
 import CreateCarsForm from "@/Components/Form/CreateCarsForm.vue";
 import InsertImageCarsForm from "@/Components/Form/InsertImageCarsForm.vue";
+import AddPricesForm from "@/Components/Form/AddPricesForm.vue";
 import ActionButton from "@/Components/ButtonWithIcon.vue";
 import { result } from "lodash";
 import axios from "axios";
@@ -45,6 +46,12 @@ const openImage = async (car) => {
     selectedModal.value = "gambar";
     const { data } = await axios.get(route("mobil.image", car.id));
     dataImage.value = data;
+    showModal.value = true;
+};
+
+const openPrice = async (car) => {
+    selectedCar.value = car;
+    selectedModal.value = "harga";
     showModal.value = true;
 };
 
@@ -211,7 +218,10 @@ watch(search, (value) => {
                     </ActionButton>
                     <ActionButton title="Tambah Harga" class="bg-green-500">
                         <template #icon>
-                            <DollarSign class="w-4 h-4 text-white" />
+                            <DollarSign
+                                class="w-4 h-4 text-white"
+                                @click="openPrice(row)"
+                            />
                         </template>
                     </ActionButton>
                     <ActionButton
@@ -241,6 +251,12 @@ watch(search, (value) => {
                 >
                     Tambah Gambar
                 </h2>
+                <h2
+                    v-if="selectedModal === 'harga'"
+                    class="text-lg font-semibold"
+                >
+                    Tambah Harga
+                </h2>
             </template>
 
             <div v-if="selectedModal === 'mobil'">
@@ -259,6 +275,9 @@ watch(search, (value) => {
                     @cancel="showModal == false"
                     @submit="handleSubmitImage"
                 />
+            </div>
+            <div v-if="selectedModal === 'harga'">
+                <AddPricesForm @cancel="showModal == false" />
             </div>
         </Modal>
     </AdminLayout>

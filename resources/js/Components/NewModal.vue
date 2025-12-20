@@ -11,6 +11,10 @@ defineProps({
         type: Boolean,
         required: true,
     },
+    width: {
+        type: String,
+        default: "max-w-lg",
+    },
 });
 
 const emit = defineEmits(["close"]);
@@ -43,7 +47,7 @@ const emit = defineEmits(["close"]);
                     leave-to="opacity-0 scale-95"
                 >
                     <DialogPanel
-                        class="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl"
+                        :class="`w-full ${width} rounded-lg bg-white p-6 shadow-xl`"
                     >
                         <!-- Header -->
                         <div class="flex items-center justify-between mb-4">
