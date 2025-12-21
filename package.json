@@ -22,6 +22,7 @@
         "@headlessui/vue": "^1.7.23",
         "lodash": "^4.17.21",
         "lucide-vue-next": "^0.561.0",
-        "sweetalert2": "^11.26.10"
+        "sweetalert2": "^11.26.10",
+        "vue-currency-input": "^3.2.2"
     }
 }

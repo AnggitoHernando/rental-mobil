@@ -26,7 +26,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mobil', [CarController::class, 'index'])->name('mobil.index');
     Route::get('/mobil/image/{car}', [CarController::class, 'getImage'])->name('mobil.image');
-    Route::post('/mobil/image/simpan', [CarController::class, 'storageImage'])->name('mobil.image.storage');
+    Route::get('/mobil/price/{car}', [CarController::class, 'getPrice'])->name('mobil.price');
+    Route::post('/mobil/image/simpan', [CarController::class, 'storeImage'])->name('mobil.image.store');
+    Route::post('/mobil/price/simpan', [CarController::class, 'storePrice'])->name('mobil.price.store');
+    Route::delete('/mobil/price/delete/{price}', [CarController::class, 'destroyPrice'])->name('mobil.price.destroy');
     Route::post('/mobil/simpan', [CarController::class, 'store'])->name('mobil.store');
     Route::delete('/mobil/hapus/{car}', [CarController::class, 'destroy'])->name('mobil.destroy');
     Route::put('/mobil/update/{car}', [CarController::class, 'update'])->name('mobil.update');

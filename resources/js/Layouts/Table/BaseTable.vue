@@ -117,7 +117,7 @@ const toggleSort = (column) => {
                     v-else
                     v-for="row in rows"
                     :key="row.id"
-                    class="border-t hover:bg-gray-50"
+                    class="capitalize border-t hover:bg-gray-50"
                 >
                     <td v-for="col in columns" :key="col.key" class="px-4 py-3">
                         <slot :name="`cell-${col.key}`" :row="row">

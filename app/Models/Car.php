@@ -65,4 +65,9 @@ class Car extends Model
 
         return $this->hasOne(CarImage::class)->where('cover', '1');
     }
+
+    public function prices()
+    {
+        return $this->hasMany(CarPrice::class, 'car_id');
+    }
 }

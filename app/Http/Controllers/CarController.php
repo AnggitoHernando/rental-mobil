@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Car;
+use App\Models\CarPrice;
 use App\Models\Configuration;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -46,6 +47,15 @@ class CarController extends Controller
         ]);
     }
 
+    public function getPrice(Car $car)
+    {
+        $result = $car->load('prices');
+        $price = $result->prices;
+        return response()->json([
+            'price' => $price
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -59,7 +69,7 @@ class CarController extends Controller
                 'tahun' => [
                     'required',
                     'integer',
-                    'min:1700',
+                    'min:1901',
                     'max:' . now()->year,
                 ],
                 'kapasitas'  => [
@@ -95,7 +105,7 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function storageImage(Request $request, ImageService $imageService)
+    public function storeImage(Request $request, ImageService $imageService)
     {
         $validated = $request->validate([
             'car_id' => 'required|exists:cars,id',
@@ -124,6 +134,53 @@ class CarController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Gambar berhasil disimpan',
+        ]);
+    }
+
+    public function storePrice(Request $request)
+    {
+        $validated = $request->validate(
+            [
+                'car_id' => 'required|exists:cars,id',
+                'price_type' => [
+                    'required',
+                    Rule::in(['harian', 'mingguan', 'bulanan']),
+                    Rule::unique('car_prices', 'price_type')
+                        ->where(fn($q) => $q->where('car_id', $request->car_id)),
+                ],
+                'bruto' => ['required', 'numeric', 'min:1'],
+                'disc'  => ['required', 'numeric', 'min:0', 'max:100'],
+                'netto'  => ['required', 'numeric', 'min:1'],
+            ],
+            [
+                'required' => 'Kolom :attribute wajib diisi',
+                'unique' => ':attribute sudah terdaftar',
+                'exists' => ':attribute tidak terdaftar',
+                'min' => ':attribute terlalu kecil min :min',
+                'max' => ':attribute terlalu besar maksimal :max',
+                'numeric' => ':attribute harus berupa angka',
+                'price_type.unique' => ':attribute ini sudah tersedia.',
+            ],
+            [
+                'bruto' => 'Bruto',
+                'car_id' => 'Mobil',
+                'disc' => 'Diskon',
+                'price_type' => 'Jenis Harga',
+                'netto' => 'Netto',
+            ]
+        );
+        $car = Car::findOrFail($validated['car_id']);
+
+        $car->prices()->create([
+            'price_type' => $validated['price_type'],
+            'bruto'      => $validated['bruto'],
+            'disc'       => $validated['disc'],
+            'netto'      => $validated['netto'],
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Harga berhasil disimpan',
         ]);
     }
 
@@ -195,5 +252,14 @@ class CarController extends Controller
         $car->delete();
 
         return redirect()->back()->with('success', 'Data berhasil dihapus.');
+    }
+
+    public function destroyPrice(CarPrice $price)
+    {
+        $price->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data Berhasil Dihapus',
+        ]);
     }
 }

@@ -7,11 +7,14 @@ import {
     ChevronLeft,
     ChevronRight,
 } from "lucide-vue-next";
-defineProps({
+const props = defineProps({
     collapsed: Boolean,
     mobile: Boolean,
     open: Boolean,
+    pageNow: String,
 });
+
+const active = "bg-secondary-50 text-secondary-700 hover:bg-secondary-100";
 
 defineEmits(["close"]);
 </script>
@@ -47,6 +50,7 @@ defineEmits(["close"]);
             <Link
                 :href="route('dashboard')"
                 class="flex items-center gap-3 p-2 rounded hover:bg-gray-100"
+                :class="[pageNow == '/dashboard' ? active : '']"
             >
                 <LayoutDashboard class="w-5 h-5" />
                 <span v-if="!collapsed">Dashboard</span>
@@ -55,6 +59,7 @@ defineEmits(["close"]);
             <Link
                 :href="route('mobil.index')"
                 class="flex items-center gap-3 p-2 rounded hover:bg-gray-100"
+                :class="[pageNow == '/mobil' ? active : '']"
             >
                 <Car class="w-5 h-5" />
                 <span v-if="!collapsed">Mobil</span>

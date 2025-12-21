@@ -1,10 +1,13 @@
 <script setup>
 import { ref } from "vue";
+import { usePage } from "@inertiajs/vue3";
 import Sidebar from "@/Components/Admin/Sidebar.vue";
 import Navbar from "@/Components/Admin/Navbar.vue";
+const page = usePage();
+const pageNow = ref(page.url);
 
-const sidebarCollapsed = ref(false); // desktop
-const mobileSidebarOpen = ref(false); // mobile
+const sidebarCollapsed = ref(false);
+const mobileSidebarOpen = ref(false);
 </script>
 
 <template>
@@ -13,6 +16,7 @@ const mobileSidebarOpen = ref(false); // mobile
             class="hidden md:flex"
             :collapsed="sidebarCollapsed"
             @toggleCollapse="sidebarCollapsed = !sidebarCollapsed"
+            :pageNow="pageNow"
         />
 
         <Sidebar
@@ -21,6 +25,7 @@ const mobileSidebarOpen = ref(false); // mobile
             :mobile="true"
             :open="mobileSidebarOpen"
             @close="mobileSidebarOpen = false"
+            :pageNow="pageNow"
         />
 
         <div

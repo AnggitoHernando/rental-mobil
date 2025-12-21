@@ -6,12 +6,13 @@ import BaseTable from "@/Layouts/Table/BaseTable.vue";
 import Pagination from "@/Layouts/Table/Pagination.vue";
 import TableFilters from "@/Layouts/Table/TableFilters.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { ref, getCurrentInstance, watch } from "vue";
+import { ref, getCurrentInstance, watch, computed } from "vue";
 import Modal from "@/Components/NewModal.vue";
 import CreateCarsForm from "@/Components/Form/CreateCarsForm.vue";
 import InsertImageCarsForm from "@/Components/Form/InsertImageCarsForm.vue";
 import AddPricesForm from "@/Components/Form/AddPricesForm.vue";
 import ActionButton from "@/Components/ButtonWithIcon.vue";
+import LoadingSpinner from "@/Components/LoadingSpinner.vue";
 import { result } from "lodash";
 import axios from "axios";
 
@@ -27,7 +28,12 @@ const { items, config } = defineProps({
 const selectedCar = ref(null);
 const errors = ref({});
 const selectedModal = ref(null);
+const loading = ref(false);
 const dataImage = ref(null);
+const dataPrice = ref(null);
+const classModal = computed(() =>
+    selectedModal.value == "harga" ? "max-w-4xl" : "max-w-lg"
+);
 
 const openCreate = () => {
     selectedCar.value = null;
@@ -37,7 +43,8 @@ const openCreate = () => {
 
 const openEdit = (car) => {
     selectedCar.value = car;
-    errors.value = "";
+    selectedModal.value = "mobil";
+    errors.value = {};
     showModal.value = true;
 };
 
@@ -50,8 +57,11 @@ const openImage = async (car) => {
 };
 
 const openPrice = async (car) => {
+    errors.value = {};
     selectedCar.value = car;
     selectedModal.value = "harga";
+    const { data } = await axios.get(route("mobil.price", car.id));
+    dataPrice.value = data.price;
     showModal.value = true;
 };
 
@@ -63,9 +73,11 @@ const deleteRow = (item) => {
         showCancelButton: true,
     }).then((result) => {
         if (result.isConfirmed) {
+            loading.value = true;
             router.delete(route("mobil.destroy", item.id), {
                 onSuccess: () => {
                     swal.fire("Berhasil", "Data berhasil dihapus", "success");
+                    loading.value = false;
                 },
                 onError: (err) => {
                     console.log(err);
@@ -94,6 +106,7 @@ const columns = [
 ];
 
 const handleSubmit = ({ isEdit, data }) => {
+    loading.value = true;
     if (isEdit) {
         router.put(route("mobil.update", data.id), data, {
             onSuccess: () => {
@@ -115,7 +128,9 @@ const handleSubmit = ({ isEdit, data }) => {
                     text: "Periksa kembali data yang kamu input",
                 });
             },
-            onFinish: () => {},
+            onFinish: () => {
+                loading.value = false;
+            },
         });
     } else {
         router.post(route("mobil.store"), data, {
@@ -138,12 +153,15 @@ const handleSubmit = ({ isEdit, data }) => {
                     text: "Periksa kembali data yang kamu input",
                 });
             },
-            onFinish: () => {},
+            onFinish: () => {
+                loading.value = false;
+            },
         });
     }
 };
 
 const handleSubmitImage = async (data) => {
+    loading.value = true;
     const formImage = new FormData();
     formImage.append("car_id", data.data.car_id);
     if (data.data.image?.length) {
@@ -152,19 +170,65 @@ const handleSubmitImage = async (data) => {
             formImage.append(`images[${i}][cover]`, data_image.cover);
         });
     }
-    for (const [key, value] of formImage.entries()) {
-        console.log(key, value);
-    }
 
-    const res = await axios.post(route("mobil.image.storage"), formImage, {
+    const res = await axios.post(route("mobil.image.store"), formImage, {
         headers: { "Content-Type": "multipart/form-data" },
     });
-    if (res.status == "success") {
+    if (res.data.status == "success") {
         swal.fire("Berhasil!", res.data.message, "success");
+        showModal.value = false;
+        loading.value = false;
     } else {
         console.log(res);
+        loading.value = false;
     }
 };
+
+const handleSubmitPrice = async (data) => {
+    try {
+        const res = await axios.post(route("mobil.price.store"), data.data);
+        swal.fire("Berhasil!", res.data.message, "success");
+        const resGet = await axios.get(route("mobil.price", data.data.car_id));
+        dataPrice.value = resGet.data.price;
+    } catch (error) {
+        errors.value = error.response?.data.errors;
+        swal.fire({
+            icon: "error",
+            title: "Gagal",
+            text: "Terjadi Kesalahan Inputan!!",
+        });
+    }
+};
+
+const deleteRowPrice = async (data) => {
+    const confirm = await swal.fire({
+        title: `Hapus Harga "${data.item.price_type}" ?`,
+        text: "Data Yang Sudah Dihapus Tidak Bisa Dikembalikan",
+        icon: "warning",
+        showCancelButton: true,
+    });
+    if (confirm.isConfirmed) {
+        try {
+            const res = await axios.delete(
+                route("mobil.price.destroy", data.item)
+            );
+            swal.fire("Berhasil!", res.data.message, "success");
+            const resGet = await axios.get(
+                route("mobil.price", data.item.car_id)
+            );
+            dataPrice.value = resGet.data.price;
+        } catch (error) {
+            console.log(error);
+            errors.value = error.response?.data.errors;
+            swal.fire({
+                icon: "error",
+                title: "Gagal",
+                text: "Terjadi Kesalahan Inputan!!",
+            });
+        }
+    }
+};
+
 const search = ref("");
 
 watch(search, (value) => {
@@ -180,6 +244,7 @@ watch(search, (value) => {
 </script>
 <template>
     <AdminLayout>
+        <LoadingSpinner :show="loading" />
         <Head title="Mobil" />
         <h1 class="text-2xl font-bold mb-4">Mobil</h1>
         <div class="mb-2 flex flex-col sm:flex-row justify-end">
@@ -197,6 +262,9 @@ watch(search, (value) => {
             :filters="filters"
             route-name="mobil.index"
         >
+            <template #cell-status_aktif="{ row }">
+                {{ row.status_aktif == "1" ? "Aktif" : "Tidak Aktif" }}
+            </template>
             <template #cell-actions="{ row }">
                 <div class="flex items-center gap-2">
                     <ActionButton
@@ -237,7 +305,7 @@ watch(search, (value) => {
             </template>
         </BaseTable>
         <Pagination :links="items.links" :meta="items" />
-        <Modal :show="showModal" @close="showModal = false">
+        <Modal :show="showModal" :width="classModal" @close="showModal = false">
             <template #title>
                 <h2
                     v-if="selectedModal === 'mobil'"
@@ -277,7 +345,14 @@ watch(search, (value) => {
                 />
             </div>
             <div v-if="selectedModal === 'harga'">
-                <AddPricesForm @cancel="showModal == false" />
+                <AddPricesForm
+                    :data="selectedCar"
+                    :dataPrice="dataPrice"
+                    :errors="errors"
+                    @cancel="showModal == false"
+                    @submit="handleSubmitPrice"
+                    @delete="deleteRowPrice"
+                />
             </div>
         </Modal>
     </AdminLayout>

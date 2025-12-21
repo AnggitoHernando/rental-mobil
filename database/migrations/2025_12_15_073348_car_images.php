@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('car_images', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('car_id')->constrained()->cascadeOnDelete();
             $table->string('image_path');
             $table->enum('cover', ['0', '1'])->default('0');
