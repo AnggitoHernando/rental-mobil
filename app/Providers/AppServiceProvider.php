@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 use App\Models\Configuration;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,9 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
         Inertia::share([
             'config' => [
-                'noImage' => Configuration::get('no-image'),
+                'noImage' => Schema::hasTable('configurations')
+                    ? Configuration::get('no-image')
+                    : null,
             ]
         ]);
     }

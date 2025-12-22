@@ -5,7 +5,7 @@ defineProps({ car: Object });
 
 <template>
     <div
-        class="group relative bg-white rounded-3xl border border-gray-100 hover:border-blue-300 transition overflow-hidden"
+        class="group cursor-pointer relative bg-white rounded-3xl border border-gray-100 hover:border-blue-300 transition overflow-hidden"
     >
         <div class="relative">
             <img
